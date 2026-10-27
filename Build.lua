@@ -1,4 +1,4 @@
-local CFlags = "-O2"
+local CFlags = "-O2 -Wall"
 local Output = "Build/rucc"
 
 local Sources = {
