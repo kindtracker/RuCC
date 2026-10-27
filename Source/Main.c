@@ -10,12 +10,11 @@ int main(int Argc, char *Argv[]) {
     FileName = Argument;
   }
 
-  if (FileName == NULL) {
-    fprintf(stderr, "RuCC: Error: No input files\n");
-    return 1;
-  }
-
   RuCCState *State = RUCCNewState();
+
+  if (FileName == NULL) {
+    RuCCError(State, "UsageError", "No input files");
+  }
 
   int Status = RuCCCompile(State, FileName);
 
