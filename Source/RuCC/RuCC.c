@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Include/RuCC.h"
+#include "RuCC.h"
 
 RuCCState *RUCCNewState() {
   RuCCState *State = malloc(sizeof(RuCCState));
@@ -27,7 +27,7 @@ int RuCCCompile(RuCCState *State, const char *FileName) {
   fgets(FileContent, Size, FilePtr);
   State->FileContent = FileContent;
 
-  puts(FileContent);
+  RuCCTokenize(State);
 
   free(FileContent);
   return 0;

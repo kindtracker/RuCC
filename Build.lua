@@ -3,6 +3,7 @@ local Output = "Build/rucc"
 
 local Sources = {
 	["Source"] = "*.c",
+	["Source/RuCC"] = "*.c",
 }
 
 local Includes = {
@@ -13,6 +14,8 @@ local CFiles = {}
 
 local function Execute(Command)
 	local FullCommand = Command
+
+	--print(FullCommand)
 
 	local Pipe = io.popen(FullCommand, "r")
 	if not Pipe then
@@ -54,12 +57,21 @@ end
 
 table.sort(CFiles)
 
+local IncludesString = ""
+local IsFirst = true
+for IncludePath, _ in pairs(Includes) do
+	local Include = (IsFirst and "" or " ") .. string.format("-I%s", IncludePath)
+	IncludesString = IncludesString .. Include
+
+	IsFirst = false
+end
+
 local OFiles = {}
 for _, Path in pairs(CFiles) do
 	local OFile = string.format("Build/%s.o", Path)
 	table.insert(OFiles, OFile)
 
-	local Command = string.format("cc -c -o %s %s", OFile, Path)
+	local Command = string.format("cc -c %s %s -o %s", Path, IncludesString, OFile)
 	print(Path)
 	Execute(Command)
 end

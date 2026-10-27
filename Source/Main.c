@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "Include/RuCC.h"
+#include "RuCC.h"
 
 int main(int Argc, char *Argv[]) {
   char *FileName = NULL;
