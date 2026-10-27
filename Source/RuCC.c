@@ -1,9 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "Include/RuCC.h"
 
-int RuCCCompile(const char *FileName) {
+RuCCState *RUCCNewState() {
+  RuCCState *State = malloc(sizeof(RuCCState));
+  memset(State, 0, sizeof(RuCCState));
+
+  return State;
+}
+
+int RuCCCompile(RuCCState *State, const char *FileName) {
   FILE *FilePtr = fopen(FileName, "r");
 
   if (!FilePtr) {
@@ -15,10 +23,12 @@ int RuCCCompile(const char *FileName) {
   size_t Size = ftell(FilePtr);
   fseek(FilePtr, 0, SEEK_SET);
 
-  const char *FileContent = malloc(Size);
+  char *FileContent = malloc(Size);
   fgets(FileContent, Size, FilePtr);
+  State->FileContent = FileContent;
 
   puts(FileContent);
 
+  free(FileContent);
   return 0;
 }

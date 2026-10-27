@@ -15,7 +15,9 @@ int main(int Argc, char *Argv[]) {
     return 1;
   }
 
-  int Status = RuCCCompile(FileName);
+  RuCCState *State = RUCCNewState();
+
+  int Status = RuCCCompile(State, FileName);
 
   return Status;
 }
