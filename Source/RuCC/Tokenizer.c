@@ -34,6 +34,10 @@ int RuCCTokenize(RuCCState *State) {
   State->Tokens = Token;
 
   while (*Character) {
+    if (isspace(*Character)) {
+      Character++;
+    }
+
     if (IsIdent(*Character, false)) {
       int StartIndex = GetIndex();
 
@@ -68,6 +72,22 @@ int RuCCTokenize(RuCCState *State) {
                *Character == '.') {
       Token->Kind = RuCCTokenPunct;
       Token->Value = Character;
+      NewToken();
+    } else if (isdigit(*Character)) {
+      int StartIndex = GetIndex();
+
+      while (isdigit(*Character) || *Character == '.') {
+        Character++;
+      }
+
+      char *String = Slice(FileContent, StartIndex, GetIndex());
+      double Number = atof(String);
+
+      double *NumberPointer = malloc(sizeof(double));
+      memcpy(NumberPointer, &Number, sizeof(double));
+
+      Token->Kind = RuCCTokenNumber;
+      Token->Value = NumberPointer;
       NewToken();
     } else {
       RuCCError(State, "SyntaxError", "Unexpected character: '%c'", *Character);

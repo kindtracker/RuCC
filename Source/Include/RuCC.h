@@ -1,6 +1,14 @@
 #pragma once
 
-typedef enum { RuCCTokenIdent, RuCCTokenString, RuCCTokenPunct } RuCCTokenKind;
+// TODO: Add TokenKeyword
+
+typedef enum {
+  RuCCTokenIdent,   // Implemented
+  RuCCTokenKeyword, // Not Implemented
+  RuCCTokenPunct,   // Implemented
+  RuCCTokenString,  // Implemented
+  RuCCTokenNumber   // Not Implemented
+} RuCCTokenKind;
 
 typedef struct RuCCToken RuCCToken;
 struct RuCCToken {
