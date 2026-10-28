@@ -17,5 +17,5 @@ RuCCState *RUCCNewState();
 
 void RuCCError(RuCCState *State, const char *Type, const char *Format, ...);
 
-int RuCCCompile(RuCCState *State, const char *FileName);
+int RuCCCompile(RuCCState *State, char *FileName);
 int RuCCTokenize(RuCCState *State);

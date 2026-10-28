@@ -24,7 +24,7 @@ int RuCCTokenize(RuCCState *State) {
   char *FileContent = State->FileContent;
   char *Character = FileContent;
 
-  while (*Character != '\0') {
+  while (*Character) {
     if (IsIdent(*Character, false)) {
       int StartIndex = GetIndex();
 

@@ -11,13 +11,14 @@ RuCCState *RUCCNewState() {
   return State;
 }
 
-int RuCCCompile(RuCCState *State, const char *FileName) {
+int RuCCCompile(RuCCState *State, char *FileName) {
   FILE *FilePtr = fopen(FileName, "r");
 
   if (!FilePtr) {
-    fprintf(stderr, "RuCC: Error: Failed to open %s\n", FileName);
-    return 1;
+    RuCCError(State, "IoError", "Failed to open %s", FileName);
   }
+
+  State->FileName = FileName;
 
   fseek(FilePtr, 0, SEEK_END);
   size_t Size = ftell(FilePtr);
