@@ -29,6 +29,7 @@ int RuCCCompile(RuCCState *State, char *FileName) {
   State->FileContent = FileContent;
 
   RuCCTokenize(State);
+  RuCCParse(State);
 
   free(FileContent);
   return 0;

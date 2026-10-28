@@ -21,8 +21,8 @@ static char *Slice(const char *String, size_t Start, size_t End) {
 
 #define GetIndex() Character - FileContent
 #define NewToken()                                                             \
-  Token->NextToken = malloc(sizeof(RuCCToken));                                \
-  Token = Token->NextToken;                                                    \
+  Token->Next = malloc(sizeof(RuCCToken));                                     \
+  Token = Token->Next;                                                         \
   memset(Token, 0, sizeof(RuCCToken))
 
 int RuCCTokenize(RuCCState *State) {
