@@ -33,8 +33,28 @@ int RuCCTokenize(RuCCState *State) {
       }
 
       const char *Ident = Slice(FileContent, StartIndex, GetIndex());
+      Character--;
 
       printf("Ident %s\n", Ident);
+    } else if (*Character == '\"') {
+      Character++;
+      int StartIndex = GetIndex();
+
+      while (*Character != '\"') {
+        Character++;
+      }
+
+      Character--;
+      const char *String = Slice(FileContent, StartIndex, GetIndex());
+      Character++;
+
+      printf("String %s\n", String);
+    } else if (*Character == '(' || *Character == ')' || *Character == '{' ||
+               *Character == '}' || *Character == '[' || *Character == ']' ||
+               *Character == ';' || *Character == ',' || *Character == ':' ||
+               *Character == '.') {
+      printf("Punct %c\n", *Character);
+
     } else {
       RuCCError(State, "SyntaxError", "Unexpected character: '%c'", *Character);
     }
