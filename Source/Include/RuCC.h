@@ -1,10 +1,10 @@
 #pragma once
 
-typedef enum { RuCCTokenIdent } RuCCTokenKind;
+typedef enum { RuCCTokenIdent, RuCCTokenString, RuCCTokenPunct } RuCCTokenKind;
 
 typedef struct RuCCToken RuCCToken;
 struct RuCCToken {
-  const char *Kind;
+  RuCCTokenKind Kind;
   void *Value;
   RuCCToken *NextToken;
 };

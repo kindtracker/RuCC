@@ -44,6 +44,7 @@ int RuCCTokenize(RuCCState *State) {
       char *Ident = Slice(FileContent, StartIndex, GetIndex());
       Character--;
 
+      Token->Kind = RuCCTokenIdent;
       Token->Value = Ident;
       NewToken();
     } else if (*Character == '\"') {
@@ -58,12 +59,14 @@ int RuCCTokenize(RuCCState *State) {
       char *String = Slice(FileContent, StartIndex, GetIndex());
       Character++;
 
+      Token->Kind = RuCCTokenString;
       Token->Value = String;
       NewToken();
     } else if (*Character == '(' || *Character == ')' || *Character == '{' ||
                *Character == '}' || *Character == '[' || *Character == ']' ||
                *Character == ';' || *Character == ',' || *Character == ':' ||
                *Character == '.') {
+      Token->Kind = RuCCTokenPunct;
       Token->Value = Character;
       NewToken();
     } else {
