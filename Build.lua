@@ -1,51 +1,40 @@
-local JavacFlags = "-Xlint:all"
-local Output = "Build/RuCC"
-local MainClass = "Main"
+local CFlags = "-O2 -Wall"
+local Output = "Build/rucc"
 
 local Sources = {
-	["Source"] = "*.java",
-	["Source/RuCC"] = "*.java",
+	["Source"] = "*.c",
+	["Source/RuCC"] = "*.c",
 }
 
-local Classes = "Build/classes"
-local Manifest = "Build/.manifest"
-local JavaFiles = {}
+local Includes = {
+	["Source/Include"] = "*.h",
+}
+
+local CFiles = {}
 
 local function Execute(Command)
-	local Pipe = io.popen(Command .. " 2>&1", "r")
-	assert(Pipe, "Could not execute: " .. Command)
+	local FullCommand = Command
+
+	--print(FullCommand)
+
+	local Pipe = io.popen(FullCommand, "r")
+	if not Pipe then
+		assert(false, "Could not execute: " .. FullCommand)
+	end
 
 	local Result = Pipe:read("*a")
 	local Success, Reason, Code = Pipe:close()
 
-	assert(
-		Success == true or Success == 0,
-		"Command failed: " .. Command .. "\n" .. Result .. " (" .. tostring(Code or Reason or Success) .. ")"
-	)
+	if Success ~= true and Success ~= 0 then
+		assert(false, "Command failed: " .. Command .. " (" .. tostring(Code or Reason or Success) .. ")")
+	end
 
 	return Result
 end
 
-local function ReadFile(Path)
-	local File = io.open(Path, "r")
-	if not File then
-		return nil
-	end
-
-	local Content = File:read("*a")
-	File:close()
-	return Content
-end
-
-local function WriteFile(Path, Content)
-	local File = assert(io.open(Path, "w"))
-	File:write(Content)
-	File:close()
-end
-
 local function ListFiles(Directory, Pattern)
 	local Files = {}
-	local Command = string.format("find '%s' -maxdepth 1 -type f -name '%s' -print", Directory, Pattern)
+	local Command = string.format("find %s -maxdepth 1 -type f -name %s -print 2>/dev/null", Directory, Pattern)
 
 	for Path in Execute(Command):gmatch("[^\r\n]+") do
 		Files[#Files + 1] = Path
@@ -54,67 +43,39 @@ local function ListFiles(Directory, Pattern)
 	return Files
 end
 
-local function Quote(Path)
-	return "'" .. Path:gsub("'", "'\\''") .. "'"
-end
-
 for Source, Pattern in pairs(Sources) do
-	for _, Path in ipairs(ListFiles(Source, Pattern)) do
-		JavaFiles[#JavaFiles + 1] = Path
+	for _, Path in pairs(ListFiles(Source, Pattern)) do
+		CFiles[#CFiles + 1] = Path
 	end
 end
 
-table.sort(JavaFiles)
-
-if #JavaFiles == 0 then
-	error("No Java source files found")
-end
-
-local Fingerprint = JavacFlags .. "\n" .. MainClass .. "\n"
-
-for _, Path in ipairs(JavaFiles) do
-	local Info = Execute(string.format("stat -c '%%Y %%s' %s", Quote(Path)))
-
-	Fingerprint = Fingerprint .. Path .. ":" .. Info
-end
-
 Execute("mkdir -p Build")
-
-local Previous = ReadFile(Manifest)
-local JarExists = io.open(Output .. ".jar", "rb")
-
-if JarExists then
-	JarExists:close()
+for Source, _ in pairs(Sources) do
+	local Command = string.format("mkdir -p Build/%s", Source)
+	Execute(Command)
 end
 
-if Previous == Fingerprint and JarExists then
-	print("Up to date")
-	return
+table.sort(CFiles)
+
+local IncludesString = ""
+local IsFirst = true
+for IncludePath, _ in pairs(Includes) do
+	local Include = (IsFirst and "" or " ") .. string.format("-I%s", IncludePath)
+	IncludesString = IncludesString .. Include
+
+	IsFirst = false
 end
 
-Execute("rm -rf " .. Quote(Classes))
-Execute("mkdir -p " .. Quote(Classes))
+local OFiles = {}
+for _, Path in pairs(CFiles) do
+	local OFile = string.format("Build/%s.o", Path)
+	table.insert(OFiles, OFile)
 
-local Arguments = {}
-for _, Path in ipairs(JavaFiles) do
-	Arguments[#Args + 1] = Quote(Path)
+	local Command = string.format("cc -c %s %s -o %s", Path, IncludesString, OFile)
+	print(Path)
+	Execute(Command)
 end
 
-WriteFile("Build/sources.args", table.concat(Arguments, "\n") .. "\n")
-
-print("Compiling")
-Execute(string.format("javac %s -d %s @Build/sources.args", JavacFlags, Quote(Classes)))
-
-print("Packaging")
-Execute(
-	string.format(
-		"jar --create --file %s --main-class %s -C %s .",
-		Quote(Output .. ".jar"),
-		Quote(MainClass),
-		Quote(Classes)
-	)
-)
-
-WriteFile(Manifest, Fingerprint)
-
-print(Output .. ".jar")
+print(Output)
+local Command = string.format("cc %s -o %s", table.concat(OFiles, " "), Output)
+Execute(Command)
