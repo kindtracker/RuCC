@@ -35,6 +35,8 @@ int RuCCTokenize(RuCCState *State) {
       const char *Ident = Slice(FileContent, StartIndex, GetIndex());
 
       printf("Ident %s\n", Ident);
+    } else {
+      RuCCError(State, "SyntaxError", "Unexpected character: '%c'", *Character);
     }
 
     Character++;
