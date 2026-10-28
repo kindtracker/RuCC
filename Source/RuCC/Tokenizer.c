@@ -48,7 +48,35 @@ int RuCCTokenize(RuCCState *State) {
       char *Ident = Slice(FileContent, StartIndex, GetIndex());
       Character--;
 
-      Token->Kind = RuCCTokenIdent;
+      bool IsKeyword = false;
+      if (strcmp(Ident, "return") == 0 || strcmp(Ident, "if") == 0 ||
+          strcmp(Ident, "else") == 0 || strcmp(Ident, "for") == 0 ||
+          strcmp(Ident, "while") == 0 || strcmp(Ident, "int") == 0 ||
+          strcmp(Ident, "sizeof") == 0 || strcmp(Ident, "char") == 0 ||
+          strcmp(Ident, "struct") == 0 || strcmp(Ident, "union") == 0 ||
+          strcmp(Ident, "short") == 0 || strcmp(Ident, "long") == 0 ||
+          strcmp(Ident, "void") == 0 || strcmp(Ident, "typedef") == 0 ||
+          strcmp(Ident, "_Bool") == 0 || strcmp(Ident, "enum") == 0 ||
+          strcmp(Ident, "static") == 0 || strcmp(Ident, "goto") == 0 ||
+          strcmp(Ident, "break") == 0 || strcmp(Ident, "continue") == 0 ||
+          strcmp(Ident, "switch") == 0 || strcmp(Ident, "case") == 0 ||
+          strcmp(Ident, "default") == 0 || strcmp(Ident, "extern") == 0 ||
+          strcmp(Ident, "_Alignof") == 0 || strcmp(Ident, "_Alignas") == 0 ||
+          strcmp(Ident, "do") == 0 || strcmp(Ident, "signed") == 0 ||
+          strcmp(Ident, "unsigned") == 0 || strcmp(Ident, "const") == 0 ||
+          strcmp(Ident, "volatile") == 0 || strcmp(Ident, "auto") == 0 ||
+          strcmp(Ident, "register") == 0 || strcmp(Ident, "restrict") == 0 ||
+          strcmp(Ident, "__restrict") == 0 ||
+          strcmp(Ident, "__restrict__") == 0 ||
+          strcmp(Ident, "_Noreturn") == 0 || strcmp(Ident, "float") == 0 ||
+          strcmp(Ident, "double") == 0 || strcmp(Ident, "typeof") == 0 ||
+          strcmp(Ident, "asm") == 0 || strcmp(Ident, "_Thread_local") == 0 ||
+          strcmp(Ident, "__thread") == 0 || strcmp(Ident, "_Atomic") == 0 ||
+          strcmp(Ident, "__attribute__") == 0) {
+        IsKeyword = true;
+      }
+
+      Token->Kind = IsKeyword ? RuCCTokenKeyword : RuCCTokenIdent;
       Token->Value = Ident;
       NewToken();
     } else if (*Character == '\"') {

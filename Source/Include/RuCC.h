@@ -4,10 +4,10 @@
 
 typedef enum {
   RuCCTokenIdent,   // Implemented
-  RuCCTokenKeyword, // Not Implemented
+  RuCCTokenKeyword, // Implemented
   RuCCTokenPunct,   // Implemented
   RuCCTokenString,  // Implemented
-  RuCCTokenNumber   // Not Implemented
+  RuCCTokenNumber   // Implemented
 } RuCCTokenKind;
 
 typedef struct RuCCToken RuCCToken;
