@@ -20,9 +20,18 @@ static char *Slice(const char *String, size_t Start, size_t End) {
 }
 
 #define GetIndex() Character - FileContent
+#define NewToken()                                                             \
+  Token->NextToken = malloc(sizeof(RuCCToken));                                \
+  Token = Token->NextToken;                                                    \
+  memset(Token, 0, sizeof(RuCCToken))
+
 int RuCCTokenize(RuCCState *State) {
   char *FileContent = State->FileContent;
   char *Character = FileContent;
+
+  RuCCToken *Token = malloc(sizeof(RuCCToken));
+  memset(Token, 0, sizeof(RuCCToken));
+  State->Tokens = Token;
 
   while (*Character) {
     if (IsIdent(*Character, false)) {
@@ -32,10 +41,11 @@ int RuCCTokenize(RuCCState *State) {
         Character++;
       }
 
-      const char *Ident = Slice(FileContent, StartIndex, GetIndex());
+      char *Ident = Slice(FileContent, StartIndex, GetIndex());
       Character--;
 
-      printf("Ident %s\n", Ident);
+      Token->Value = Ident;
+      NewToken();
     } else if (*Character == '\"') {
       Character++;
       int StartIndex = GetIndex();
@@ -45,16 +55,17 @@ int RuCCTokenize(RuCCState *State) {
       }
 
       Character--;
-      const char *String = Slice(FileContent, StartIndex, GetIndex());
+      char *String = Slice(FileContent, StartIndex, GetIndex());
       Character++;
 
-      printf("String %s\n", String);
+      Token->Value = String;
+      NewToken();
     } else if (*Character == '(' || *Character == ')' || *Character == '{' ||
                *Character == '}' || *Character == '[' || *Character == ']' ||
                *Character == ';' || *Character == ',' || *Character == ':' ||
                *Character == '.') {
-      printf("Punct %c\n", *Character);
-
+      Token->Value = Character;
+      NewToken();
     } else {
       RuCCError(State, "SyntaxError", "Unexpected character: '%c'", *Character);
     }

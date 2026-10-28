@@ -2,16 +2,18 @@
 
 typedef enum { RuCCTokenIdent } RuCCTokenKind;
 
+typedef struct RuCCToken RuCCToken;
+struct RuCCToken {
+  const char *Kind;
+  void *Value;
+  RuCCToken *NextToken;
+};
+
 typedef struct {
   char *FileContent;
   char *FileName;
+  RuCCToken *Tokens;
 } RuCCState;
-
-typedef struct {
-  const char *Kind;
-  void *Value;
-  RuCCState *NextToken;
-} RuCCToken;
 
 RuCCState *RUCCNewState();
 
